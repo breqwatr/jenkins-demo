@@ -16,6 +16,8 @@ pipeline {
              echo "hello world 2"
              ls
              whoami
+             pwd
+             echo $libDockerImage
         '''
 			}
 		}
