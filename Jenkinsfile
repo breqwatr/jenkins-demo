@@ -18,6 +18,8 @@ pipeline {
              whoami
              pwd
              echo $libDockerImage
+             cd lib
+             ./build.sh
         '''
 			}
 		}
