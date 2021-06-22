@@ -13,10 +13,6 @@ pipeline {
 			steps {
         sh '''#!/bin/bash
              echo "hello world 1"
-             echo $libDockerImage
-             echo "hello world 2"
-             ls
-             find /
         '''
 			}
 		}
