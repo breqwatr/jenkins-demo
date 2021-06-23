@@ -31,3 +31,17 @@ EOH
 kubectl create ns jenkins
 helm install jenkinsci jenkinsci/jenkins --values values.yaml --namespace jenkins
 ```
+
+## Add a Kubeconfig credential
+
+Name it `kubeconfig`
+
+## Add Docker username and password secrets in the target cloud
+
+```
+kubectl create secret generic dockerhub --from-literal=username=<user> --from-literal=password=<pass>
+```
+
+## Add this project to the pipeline
+
+Have it use the Jenkinsfile.
