@@ -46,25 +46,31 @@ pipeline {
     stage('BUILD') {
       steps {
         git 'https://github.com/breqwatr/jenkins-demo.git'
-        sh '''
-           cd lib
-           docker build -t breqwatrdemo/applib:latest .
-           cd ../api
-           docker build -t breqwatrdemo/appapi:latest .
-           '''
+        container('docker') {
+          sh '''
+             cd lib
+             docker build -t breqwatrdemo/applib:latest .
+             cd ../api
+             docker build -t breqwatrdemo/appapi:latest .
+             '''
+       }
       }
     }
     stage('TEST') {
       steps {
-        sh 'docker run --rm breqwatrdemo/applib pytest /app/lib/test/'
-        sh 'docker run --rm breqwatrdemo/appapi pytest /app/api/test/'
+        container('docker') {
+          sh 'docker run --rm breqwatrdemo/applib pytest /app/lib/test/'
+          sh 'docker run --rm breqwatrdemo/appapi pytest /app/api/test/'
+        }
       }
     }
     stage('PUSH') {
       steps {
-        sh 'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD'
-        sh 'docker push breqwatrdemo/applib'
-        sh 'docker push breqwatrdemo/appapi'
+        container('docker') {
+          sh 'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD'
+          sh 'docker push breqwatrdemo/applib'
+          sh 'docker push breqwatrdemo/appapi'
+        }
       }
     }
     stage('DEPLOY') {
@@ -74,7 +80,9 @@ pipeline {
     }
     stage('REJOICE') {
       steps {
-        sh 'docker run breqwatr/cowsay /usr/games/cowsay "$JENKINS_SECRET"'
+        container('docker') {
+          sh 'docker run breqwatr/cowsay /usr/games/cowsay "$JENKINS_SECRET"'
+        }
       }
     }
   }
