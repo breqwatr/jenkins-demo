@@ -50,7 +50,9 @@ pipeline {
           sh '''
              cd lib
              docker build -t breqwatrdemo/applib:latest .
-             cd ../api
+             '''
+          sh '''
+             cd api
              docker build -t breqwatrdemo/appapi:latest .
              '''
        }
