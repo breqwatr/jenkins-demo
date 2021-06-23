@@ -22,7 +22,7 @@ podTemplate(yaml: '''
         - 99d
 ''') {
   node(POD_LABEL) {
-    stage('INIT') {
+    stage('BUILD') {
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
         stage('Build the library docker image') {
@@ -45,9 +45,13 @@ podTemplate(yaml: '''
         stage('Test: api') {
           sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
         }
-				stage('Deploy App') {
-          kubernetesDeploy(configs: app-manifest.yaml)
-				}
+      }
+    }
+    stage('DEPLOY') {
+      kubernetesDeploy(configs: app-manifest.yaml)
+    }
+    stage('FINISH') {
+      container('docker') {
         stage('Rejoice') {
           sh "docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'"
         }
