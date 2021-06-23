@@ -17,6 +17,7 @@ def index():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
     .img {
+    margin-top:10%;
     margin-left: auto;
     margin-right: auto;
     display:block;
@@ -36,7 +37,7 @@ def index():
 <div class="jumbotron">
     <h1>Welcome to Jenkins Demo</h1>
     <br/>
-    <strong style="color:#337ab7;">Even Number is:&nbsp;</strong> {{even_number}}
+    <strong style="color:#337ab7;">Even Number is:&nbsp;</strong> {even_number}
 </div>
 
 </body>
