@@ -1,9 +1,0 @@
-setup.py
-applib/__init__.py
-applib/lib.py
-applib.egg-info/PKG-INFO
-applib.egg-info/SOURCES.txt
-applib.egg-info/dependency_links.txt
-applib.egg-info/requires.txt
-applib.egg-info/top_level.txt
-test/test_applib.py
