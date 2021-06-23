@@ -48,7 +48,7 @@ podTemplate(yaml: '''
 				stage('Deploy App') {
 					steps {
 						script {
-							kubernetesDeploy(configs: app-manifest.yaml")
+							kubernetesDeploy(configs: app-manifest.yaml)
 						}
 					}
 				}
