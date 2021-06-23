@@ -25,15 +25,25 @@ podTemplate(yaml: '''
     stage('Build the Docker image') {
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
-        stage('Build a docker image') {
+        stage('Build the library docker image') {
           sh '''
              cd lib
-             pwd
-             docker build -t breqwatr/applib:jenkins-1 .
+             docker build -t breqwatr/applib:latest .
+             docker tag breqwatr/applib:latest breqwatr/applib:jenkins-1
              '''
         }
-        stage('Tests') {
-          sh 'docker run --rm breqwatr/applib:jenkins-1 pytest /app/lib/test/'
+        stage('Test: lib') {
+          sh 'docker run --rm breqwatr/applib pytest /app/lib/test/'
+        }
+        stage('Build the api docker image') {
+          sh '''
+             cd api
+             docker build -t breqwatr/appapi:jenkins-1 .
+             docker tag breqwatr/appapi:latest breqwatr/appapi:jenkins-1
+             '''
+        }
+        stage('Test: api') {
+          sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
         }
       }
     }
