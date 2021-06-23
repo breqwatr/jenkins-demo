@@ -26,7 +26,9 @@ podTemplate(yaml: '''
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
         stage('Build a docker image') {
-          sh 'docker ps -a'
+          sh 'pwd'
+          sh 'ls'
+          sh 'find .'
         }
       }
     }
