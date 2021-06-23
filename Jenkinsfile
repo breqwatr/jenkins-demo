@@ -1,60 +1,80 @@
-podTemplate(yaml: '''
-    apiVersion: v1
-    kind: Pod
-    spec:
-      volumes:
-      - hostPath:
-          path: /var/run/docker.sock
-          type: ""
-        name: docker-socket
-      containers:
-      - name: jnlp
-        image: 'jenkins/inbound-agent:4.7-1'
-        args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-      - name: docker
-        image: docker
-        volumeMounts:
-        - mountPath: /var/run/docker.sock
-          name: docker-socket
-        command:
-        - sleep
-        args:
-        - 99d
-''') {
-  node(POD_LABEL) {
+pipeline {
+  environment {
+    JENKINS_SECRET = 'Jenkins with Kubernetes on Breqwatr rocks!'
+  }
+  agent {
+    kubernetes {
+      yaml '''
+        apiVersion: v1
+        kind: Pod
+        spec:
+          volumes:
+          - hostPath:
+              path: /var/run/docker.sock
+              type: ""
+            name: docker-socket
+          containers:
+          - name: jnlp
+            image: 'jenkins/inbound-agent:4.7-1'
+            args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
+          - name: docker
+            image: docker
+            env:
+              - name: JENKINS_SECRET
+                value: env.JENKINS_SECRET
+              - name: DOCKER_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: dockerhub
+                    key: username
+              - name: DOCKER_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: dockerhub
+                    key: password
+            volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-socket
+            command:
+            - sleep
+            args:
+            - 99d
+    '''
+    }
+  }
+  stages {
     stage('BUILD') {
-      git 'https://github.com/breqwatr/jenkins-demo.git'
-      container('docker') {
-        stage('build: lib') {
-          sh '''
-             cd lib
-             docker build -t breqwatr/applib:latest .
-             docker tag breqwatr/applib:latest breqwatr/applib:jenkins-1
-             '''
-        }
-        stage('test: lib') {
-          sh 'docker run --rm breqwatr/applib pytest /app/lib/test/'
-        }
-        stage('build: api') {
-          sh '''
-             cd api
-             docker build -t breqwatr/appapi:latest .
-             docker tag breqwatr/appapi:latest breqwatr/appapi:jenkins-1
-             '''
-        }
-        stage('test: api') {
-          sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
-        }
+      steps {
+        git 'https://github.com/breqwatr/jenkins-demo.git'
+        sh '''
+           cd lib
+           docker build -t breqwatrdemo/applib:latest .
+           cd ../api
+           docker build -t breqwatrdemo/appapi:latest .
+           '''
+      }
+    }
+    stage('TEST') {
+      steps {
+        sh 'docker run --rm breqwatrdemo/applib pytest /app/lib/test/'
+        sh 'docker run --rm breqwatrdemo/appapi pytest /app/api/test/'
+      }
+    }
+    stage('PUSH') {
+      steps {
+        sh 'docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD'
+        sh 'docker push breqwatrdemo/applib'
+        sh 'docker push breqwatrdemo/appapi'
       }
     }
     stage('DEPLOY') {
-      kubernetesDeploy(configs: "manifest.yml", enableConfigSubstitution: true, kubeconfigId: "kubeconfig")
+      steps {
+        kubernetesDeploy(configs: "manifest.yml", enableConfigSubstitution: true, kubeconfigId: "kubeconfig")
+      }
     }
-    stage('FINISH') {
-      container('docker') {
-        stage('rejoice') {
-          sh "docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'"
-        }
+    stage('REJOICE') {
+      steps {
+        sh 'docker run breqwatr/cowsay /usr/games/cowsay "$JENKINS_SECRET"'
       }
     }
   }
