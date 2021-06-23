@@ -22,7 +22,7 @@ podTemplate(yaml: '''
         - 99d
 ''') {
   node(POD_LABEL) {
-    stage('Build the Docker image') {
+    stage('INIT') {
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
         stage('Build the library docker image') {
