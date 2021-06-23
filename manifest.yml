@@ -16,7 +16,7 @@ spec:
         app: app
     spec:
       containers:
-      - image: breqwatr/appapi
+      - image: breqwatrdemo/appapi
         imagePullPolicy: Always
         name: appapi
 
