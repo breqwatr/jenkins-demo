@@ -48,7 +48,7 @@ podTemplate(yaml: '''
       }
     }
     stage('DEPLOY') {
-      kubernetesDeploy(configs: "manifest.yml")
+      kubernetesDeploy(configs: "manifest.yml", enableConfigSubstitution: true, kubeconfigId: "kubeconfig")
     }
     stage('FINISH') {
       container('docker') {
