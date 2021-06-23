@@ -26,9 +26,14 @@ podTemplate(yaml: '''
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
         stage('Build a docker image') {
-          sh 'pwd'
-          sh 'ls'
-          sh 'find .'
+          sh '''
+             cd lib
+             pwd
+             docker build -t breqwatr/applib:jenkins-1 .
+             '''
+        }
+        stage('Tests') {
+          sh 'docker run --rm breqwatr/applib:jenkins-1 pytest /app/lib/test/'
         }
       }
     }
