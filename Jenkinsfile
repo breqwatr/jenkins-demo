@@ -48,7 +48,7 @@ podTemplate(yaml: '''
       }
     }
     stage('DEPLOY') {
-      kubernetesDeploy(configs: "manifest.yaml")
+      kubernetesDeploy(configs: "manifest.yml")
     }
     stage('FINISH') {
       container('docker') {
