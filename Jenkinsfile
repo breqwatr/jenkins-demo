@@ -46,7 +46,7 @@ podTemplate(yaml: '''
           sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
         }
         stage('Rejoice') {
-          sh 'docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'
+          sh "docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'"
         }
       }
     }
