@@ -25,34 +25,34 @@ podTemplate(yaml: '''
     stage('BUILD') {
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
-        stage('Build the library docker image') {
+        stage('build: lib') {
           sh '''
              cd lib
              docker build -t breqwatr/applib:latest .
              docker tag breqwatr/applib:latest breqwatr/applib:jenkins-1
              '''
         }
-        stage('Test: lib') {
+        stage('test: lib') {
           sh 'docker run --rm breqwatr/applib pytest /app/lib/test/'
         }
-        stage('Build the api docker image') {
+        stage('build: api') {
           sh '''
              cd api
              docker build -t breqwatr/appapi:latest .
              docker tag breqwatr/appapi:latest breqwatr/appapi:jenkins-1
              '''
         }
-        stage('Test: api') {
+        stage('test: api') {
           sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
         }
       }
     }
     stage('DEPLOY') {
-      kubernetesDeploy(configs: "app-manifest.yaml")
+      kubernetesDeploy(configs: "manifest.yaml")
     }
     stage('FINISH') {
       container('docker') {
-        stage('Rejoice') {
+        stage('rejoice') {
           sh "docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'"
         }
       }
