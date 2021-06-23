@@ -38,12 +38,15 @@ podTemplate(yaml: '''
         stage('Build the api docker image') {
           sh '''
              cd api
-             docker build -t breqwatr/appapi:jenkins-1 .
+             docker build -t breqwatr/appapi:latest .
              docker tag breqwatr/appapi:latest breqwatr/appapi:jenkins-1
              '''
         }
         stage('Test: api') {
           sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
+        }
+        stage('Rejoice') {
+          sh 'docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'
         }
       }
     }
