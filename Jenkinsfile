@@ -46,11 +46,7 @@ podTemplate(yaml: '''
           sh 'docker run --rm breqwatr/appapi pytest /app/api/test/'
         }
 				stage('Deploy App') {
-					steps {
-						script {
-							kubernetesDeploy(configs: app-manifest.yaml)
-						}
-					}
+          kubernetesDeploy(configs: app-manifest.yaml)
 				}
         stage('Rejoice') {
           sh "docker run breqwatr/cowsay /usr/games/cowsay 'Jenkins with Kubernetes on Breqwatr rocks!'"
