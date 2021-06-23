@@ -2,21 +2,39 @@ podTemplate(yaml: '''
     apiVersion: v1
     kind: Pod
     spec:
+      volumes:
+      - hostPath:
+          path: /var/run/docker.sock
+          type: ""
+        name: docker-socket
       containers:
-      - name: test
-        image: ubuntu:focal
+      - name: jnlp
+        image: 'jenkins/inbound-agent:4.7-1'
+        args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
+      - name: docker
+        image: docker
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker-socket
         command:
         - sleep
         args:
         - 99d
-      - name: jnlp
-        image: 'jenkins/inbound-agent:4.7-1'
-        args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
 ''') {
   node(POD_LABEL) {
-    stage('Hello') {
-      container('test') {
-        sh 'echo HELLO WORLD - FROM KUBERNETES'
+    stage('Build the Docker image') {
+      git 'https://github.com/breqwatr/jenkins-demo.git'
+      container('docker') {
+        stage('Build a Maven project') {
+        sh '''#!/bin/bash
+             echo "hello world 1"
+             echo "hello world 2"
+             ls
+             whoami
+             pwd
+             docker ps -a
+        '''
+        }
       }
     }
   }
