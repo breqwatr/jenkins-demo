@@ -25,15 +25,8 @@ podTemplate(yaml: '''
     stage('Build the Docker image') {
       git 'https://github.com/breqwatr/jenkins-demo.git'
       container('docker') {
-        stage('Build a Maven project') {
-        sh '''#!/bin/bash
-             echo "hello world 1"
-             echo "hello world 2"
-             ls
-             whoami
-             pwd
-             docker ps -a
-        '''
+        stage('Build a docker image') {
+          sh 'docker ps -a'
         }
       }
     }
